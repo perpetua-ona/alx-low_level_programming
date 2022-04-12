@@ -13,7 +13,7 @@ for (digits = 48; digits <= 57; digits++)
 {
 putchar(digits);
 
-if (number == 57)
+if (digits == 57)
 {
 break;
 }
