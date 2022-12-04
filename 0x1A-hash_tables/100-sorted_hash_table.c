@@ -1,82 +1,27 @@
 #include "hash_tables.h"
 
 /**
- * shash_table_create - creates a hash table
- * @size: size of the array of linked list in the table
+ * hash_table_create - Creates a hash table.
+ * @size: The size of the array.
  *
- * Return: shash_table_t struct
+ * Return: If an error occurs - NULL.
+ *         Otherwise - a pointer to the new hash table.
  */
-shash_table_t *shash_table_create(unsigned long int size)
+hash_table_t *hash_table_create(unsigned long int size)
 {
-	shash_table_t *sht;
+	hash_table_t *ht;
+	unsigned long int i;
 
-	if (size == 0)
+	ht = malloc(sizeof(hash_table_t));
+	if (ht == NULL)
 		return (NULL);
 
-	sht = calloc(1, sizeof(shash_table_t));
-	if (!sht)
+	ht->size = size;
+	ht->array = malloc(sizeof(hash_node_t *) * size);
+	if (ht->array == NULL)
 		return (NULL);
+	for (i = 0; i < size; i++)
+		ht->array[i] = NULL;
 
-	sht->size = size;
-	sht->array = calloc((size_t)sht->size, sizeof(shash_node_t *));
-	if (sht->array == NULL)
-	{
-		free(sht);
-		return (NULL);
-	}
-
-	return (sht);
+	return (ht);
 }
-
-/**
- * shash_table_set - adds an element to the hash table
- * @ht: hash table to add the element to
- * @key: key of the element, will give the index in the array
- * @value: value of the element to store in the array
- *
- * Return: 1 on success, 0 otherwise
- */
-int shash_table_set(shash_table_t *ht, const char *key, const char *value)
-{
-	unsigned long int index;
-	shash_node_t *new;
-
-	if (!ht || !key || !strcmp(key, "") || !value)
-		return (0);
-
-	index = key_index((unsigned char *)key, ht->size);
-
-	if (check_key_s(ht->array[index], key))
-		return (replace_value_s(&ht->array[index], key, value));
-	new = add_node_s(&ht->array[index], key, value);
-	if (!new)
-		return (0);
-
-	insert_sort(new, ht);
-	return (1);
-}
-
-/**
- * insert_sort - inserts a node in a sorted doubly
- * linked list
- * @node: shash_node_t to insert
- * @ht: pointer to the hash table to insert it into
- */
-void insert_sort(shash_node_t *node, shash_table_t *ht)
-{
-	shash_node_t *head = ht->shead;
-
-	if (!head || strcmp(node->key, head->key) < 0)
-	{
-		ht->shead = node;
-		if (!head)
-			ht->stail = node;
-		else
-		{
-			node->snext = head;
-			head->sprev = node;
-		}
-		return;
-	}
-
-
